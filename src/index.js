@@ -143,6 +143,7 @@ class BlackStream {
     this.xPos = this.index * settings.fontSize;
     this.opacity = randomDecMinMax(0.75, 1);
     this.yPos = randomIntMinMax(-codeRows, codeRows) * settings.fontSize;
+    this.speed = randomIntMinMax(30, 300);
     for (let i = 0; i < codeRows; i++) {
       blackStreams.push(this);
     }
