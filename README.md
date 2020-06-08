@@ -7,6 +7,8 @@ I'm a big fan of The Matrix and have always wanted a code generator that truly m
 
 Feel free to copy, adapt, use in fan films, whatever you want. If you happen to be a VFX artist or set decorator who uses this on the new film, you'd make my dreams come true by giving me a credit.
 
+**Demo:** [matrix-code.mlathrom.com](https://matrix-code.mlathrom.com)
+
 ## Requirements
 - Node.js
 - NPM
