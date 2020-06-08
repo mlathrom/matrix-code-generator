@@ -1,4 +1,6 @@
 # Matrix Code Generator
+![Matrix Code](https://storage.googleapis.com/mlathrom-github/matrix-code/matrix-code.jpg)
+
 This is a screen-accurate Matrix Code generator built with HTML5 canvas.
 
 I'm a big fan of The Matrix and have always wanted a code generator that truly matched the code in the films. So I watched the opening sequence about 100 times, and with screen shots and video reference, built this over a weekend.
@@ -58,7 +60,7 @@ This is pretty configurable. You can change the color, font, glyphs used. The de
 
 ## Future Development
 I'll probably tinker with this some more, but I have no specific plans. Here's a list of features I'd like to add if I get the time:
-- Change direction of stream.
-- Adapt to screen resize.
-- Brighter highlighted glyphs. (tough to do because of the stream clearing)
-- Improve performance.
+- [ ] Change direction of stream.
+- [ ] Adapt to screen resize.
+- [ ] Brighter highlighted glyphs. (tough to do because of the stream clearing)
+- [ ] Improve performance.
