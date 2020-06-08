@@ -62,7 +62,8 @@ This is pretty configurable. You can change the color, font, glyphs used. The de
 
 ## Future Development
 I'll probably tinker with this some more, but I have no specific plans. Here's a list of features I'd like to add if I get the time:
+- [ ] Improve performance.
 - [ ] Change direction of stream.
 - [ ] Adapt to screen resize.
 - [ ] Brighter highlighted glyphs. (tough to do because of the stream clearing)
-- [ ] Improve performance.
+- [ ] Create WebGL version
