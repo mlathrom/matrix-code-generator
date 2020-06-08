@@ -1,5 +1,5 @@
 # The Matrix Code Generator
-![Matrix Code](https://storage.googleapis.com/mlathrom-github/matrix-code/matrix-code.jpg)
+![Matrix Code](https://repository-images.githubusercontent.com/270471929/8a997c00-a96f-11ea-9cdd-407d1f36615a)
 
 This is a screen-accurate Matrix Code generator built with HTML canvas.
 
