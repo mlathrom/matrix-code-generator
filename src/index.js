@@ -3,7 +3,7 @@ import './styles.css';
 const settings = {
   nullStreamDensity: 6,
   nullStreamLengthMin: 2,
-  nullStreamLengthMax: 24,
+  nullStreamLengthMax: 36,
   glyphTransitionRandom: true, // Controls whether glyphs change at random times and speeds (more glyph randomness)
   streamSpeedRandom: true, // Controls whether stream speed changes at random times (more speed randomness)
   streamSpeedMin: 5,
