@@ -1,7 +1,7 @@
 # The Matrix Code Generator
 ![Matrix Code](https://storage.googleapis.com/mlathrom-github/matrix-code/matrix-code.jpg)
 
-This is a screen-accurate Matrix Code generator built with HTML5 canvas.
+This is a screen-accurate Matrix Code generator built with HTML canvas.
 
 I'm a big fan of The Matrix and have always wanted a code generator that truly matched the code in the films. So I watched the opening sequence about 100 times, and with screen shots and video reference, built this over a weekend.
 
