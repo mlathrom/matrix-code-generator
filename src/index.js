@@ -32,7 +32,7 @@ const codeFont = `${settings.fontSize}px ${settings.fontFace}`;
 let time = 0;
 let streamTime = 0;
 let codeStreams = [];
-let blackStreams = [];
+let nullStreams = [];
 let codeRows = Math.floor(terminalEl.height / settings.fontSize);
 let codeColumns = Math.floor(terminalEl.width / settings.fontSize);
 
@@ -132,7 +132,7 @@ class CodeStream {
   }
 }
 
-class BlackStream {
+class NullStream {
   constructor(index) {
     this.glyph = getGlyph();
     this.csLength;
@@ -145,7 +145,7 @@ class BlackStream {
     this.yPos = randomIntMinMax(-codeRows, codeRows) * settings.fontSize;
     this.speed = randomIntMinMax(30, 300);
     for (let i = 0; i < codeRows; i++) {
-      blackStreams.push(this);
+      nullStreams.push(this);
     }
   }
   draw() {
@@ -179,7 +179,7 @@ function makeItRain() {
   for (let i = 0; i <= codeColumns; i++) {
     new CodeStream(i);
     for (let index = 0; index < settings.nullStreamDensity; index++) {
-      new BlackStream(i);
+      new NullStream(i);
     }
   }
   var rain = function () {
@@ -188,7 +188,7 @@ function makeItRain() {
     codeStreams.forEach((stream) => {
       stream.draw();
     });
-    blackStreams.forEach((clearStream) => {
+    nullStreams.forEach((clearStream) => {
       clearStream.draw();
     });
     requestAnimationFrame(rain);
