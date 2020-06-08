@@ -1,4 +1,4 @@
-# Matrix Code Generator
+# The Matrix Code Generator
 ![Matrix Code](https://storage.googleapis.com/mlathrom-github/matrix-code/matrix-code.jpg)
 
 This is a screen-accurate Matrix Code generator built with HTML5 canvas.
