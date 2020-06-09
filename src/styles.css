@@ -7,7 +7,6 @@
   font-style: normal;
   font-display: block;
 }
-
 html {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -21,38 +20,32 @@ html {
   box-sizing: inherit;
 }
 body {
-  background: #000;
+  background-color: #000;
   margin: 0;
   padding: 0;
 }
 .system {
-  position: fixed;
   width: 100%;
   height: 100%;
+  position: fixed;
   top: 0;
   left: 0;
 }
 .glyph-buffer {
+  font-family: 'matrix-code';
   width: 0;
   height: 0;
   top: -1px;
   left: -1px;
-  font-family: 'matrix-code';
 }
 .terminal {
   display: block;
-  position: fixed;
   font-family: 'matrix-code';
+  position: fixed;
   filter: blur(0.5px) drop-shadow(0 0 14px rgba(10, 255, 70, 0.65))
     drop-shadow(0 0 6px rgba(10, 255, 147, 0.65));
 }
 .screen {
-  display: block;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
   background-image: linear-gradient(
       45deg,
       rgba(0, 0, 0, 0.5) 25%,
@@ -69,4 +62,10 @@ body {
     );
   background-size: 3px 3px;
   background-position: 0 0, 1.5px 1.5px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
 }

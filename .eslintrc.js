@@ -7,9 +7,14 @@ module.exports = {
   },
   extends: ['prettier'],
   rules: {
+    'comma-dangle': ['error', 'never'],
     indent: ['error', 2],
+    'max-len': {
+      semi: ['error', 'always'],
+      code: 80,
+      tabWidth: 2,
+    },
     quotes: ['error', 'single'],
-    semi: ['error', 'always'],
   },
   parserOptions: {
     parser: 'babel-eslint',
