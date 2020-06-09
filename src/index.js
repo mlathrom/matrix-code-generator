@@ -1,18 +1,23 @@
 import './styles.css';
 
 const settings = {
-  nullStreamDensity: 4,
-  nullStreamLengthMin: 8,
-  nullStreamLengthMax: 36,
-  glyphTransitionRandom: true, // Controls whether glyphs change at random times and speeds (more glyph randomness)
-  streamSpeedRandom: true, // Controls whether stream speed changes at random times (more speed randomness)
-  streamSpeedMin: 1,
-  streamSpeedMax: 20,
+  nullStreamDensity: 3,
+  nullStreamLengthMin: 1,
+  nullStreamLengthMax: 48,
+  streamSpeedMin: 3,
+  streamSpeedMax: 10,
+  streamSpeedRandom: true,
+  streamSpeedRandomHalf: true,
+  streamSpeedBoost: 0,
+  streamJumpersMin: 0,
+  streamJumpersMax: 0,
   glyphSpeedMin: 5,
-  glyphSpeedMax: 30,
-  highlightGlyphDensity: 1,
+  glyphSpeedMax: 100,
+  glyphTransitionRandom: true,
+  highlightGlyphDensity: 2,
   glyphOpacityMin: 0.5,
   glyphOpacityMax: 1,
+  reduceFramerate: 0,
   colors: {
     default: 'rgba(63, 255, 106, 1)',
     highlight: 'rgba(200, 255, 215, 1)',
@@ -54,13 +59,16 @@ glyphBuffer.textBaseline = 'middle';
 function randomIntMinMax(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
 function randomDecMinMax(min, max) {
   return Math.random() * (max - min + 1) + min;
 }
+
 function getGlyph() {
   const glyph = randomIntMinMax(1, matrix.length);
   return glyph;
 }
+
 function renderGlyphs() {
   glyphBuffer.clearRect(0, 0, glyphBufferEl.width, glyphBufferEl.height);
   for (let glyphIndex = 0; glyphIndex < matrix.length; glyphIndex++) {
@@ -72,11 +80,12 @@ function renderGlyphs() {
       glyphBuffer.fillText(
         glyph,
         settings.fontSize * (glyphIndex + 1),
-        settings.fontSize * (colorIndex + 1)
+        settings.fontSize * (colorIndex + 1),
       );
     }
   }
 }
+
 function drawGlyph(glyph, color, xPos, yPos) {
   const randomInt = glyph;
   const glyphXPos = randomInt * settings.fontSize;
@@ -96,7 +105,7 @@ function drawGlyph(glyph, color, xPos, yPos) {
     xPos,
     yPos,
     settings.fontSize,
-    settings.fontSize
+    settings.fontSize,
   );
 }
 
@@ -105,27 +114,35 @@ class Glyph {
     this.glyph = getGlyph();
     this.xPos = xPos;
     this.index = index;
-    this.opacity = randomDecMinMax(settings.glyphOpacityMin, settings.glyphOpacityMax);
-    this.speed = randomIntMinMax(settings.glyphSpeedMin, settings.glyphSpeedMax);
+    this.opacity = randomDecMinMax(
+      settings.glyphOpacityMin,
+      settings.glyphOpacityMax,
+    );
+    this.speed = randomIntMinMax(
+      settings.glyphSpeedMin,
+      settings.glyphSpeedMax,
+    );
   }
   draw() {
     if (settings.glyphTransitionRandom) {
-      this.speed = randomIntMinMax(settings.glyphSpeedMin, settings.glyphSpeedMax);
+      this.speed = randomIntMinMax(
+        settings.glyphSpeedMin,
+        settings.glyphSpeedMax,
+      );
     }
     const yPos = this.index * settings.fontSize;
-    const oldGlyph = this.glyph;
     if (glyphTime % this.speed == 0) {
       this.glyph = getGlyph();
-      this.opacity = randomDecMinMax(settings.glyphOpacityMin, settings.glyphOpacityMax);
+      this.opacity = randomDecMinMax(
+        settings.glyphOpacityMin,
+        settings.glyphOpacityMax,
+      );
     }
-    // if (firstDrawComplete && this.glyph !== oldGlyph) {
     terminal.save();
-    // terminal.clearRect(this.xPos, yPos, settings.fontSize, settings.fontSize);
     terminal.globalAlpha = this.opacity;
     drawGlyph(this.glyph, settings.colors.default, this.xPos, yPos);
     terminal.restore();
-    // }
-    if (streamTime > 1000) {
+    if (glyphTime > 1000) {
       glyphTime = 0;
     } else {
       glyphTime = glyphTime + 1;
@@ -158,43 +175,77 @@ class NullStream {
     this.csLength;
     this.width;
     this.index = index;
-    this.height = randomIntMinMax(settings.nullStreamLengthMin, settings.nullStreamLengthMax);
+    this.height = randomIntMinMax(
+      settings.nullStreamLengthMin,
+      settings.nullStreamLengthMax,
+    );
     this.glowChance = randomIntMinMax(1, 12);
     this.xPos = this.index * settings.fontSize;
-    this.opacity = randomDecMinMax(0.75, 1);
+    this.opacity = randomDecMinMax(
+      settings.glyphOpacityMin,
+      settings.glyphOpacityMin,
+    );
     this.yPos = randomIntMinMax(-codeRows, codeRows);
-    this.speed = randomIntMinMax(30, 300);
+    this.speed = randomIntMinMax(
+      settings.streamSpeedMin,
+      settings.streamSpeedMax,
+    );
+    this.speedConstantChance = randomIntMinMax(0, 1);
+    this.nullAmount = 1;
     nullStreams.push(this);
   }
   draw() {
-    if (settings.streamSpeedRandom) {
-      this.speed = randomIntMinMax(settings.streamSpeedMin, settings.streamSpeedMax);
-    }
-    if (streamTime % this.speed == 0) {
-      this.glyph = getGlyph();
-      this.opacity = randomDecMinMax(0.5, 1);
-      if (this.yPos > terminalEl.height / settings.fontSize) {
-        this.yPos = randomIntMinMax(-codeRows, -this.height);
-      } else {
-        this.yPos = this.yPos + 1;
-      }
-    }
-    if (this.yPos + this.height > 0) {
-      terminal.save();
-      terminal.clearRect(
-        this.xPos,
-        this.yPos * settings.fontSize,
-        settings.fontSize,
-        this.height * settings.fontSize
+    let glowGlyph = false;
+    if (
+      (this.glowChance * settings.highlightGlyphDensity) % 6 == 0 &&
+      settings.highlightGlyphDensity !== 0
+    ) {
+      glowGlyph = true;
+      this.nullAmount = randomIntMinMax(
+        settings.streamJumpersMin + 1,
+        settings.streamJumpersMax + 1,
       );
-      if (
-        (this.glowChance * settings.highlightGlyphDensity) % 6 == 0 &&
-        settings.highlightGlyphDensity !== 0
-      ) {
-        terminal.globalAlpha = this.opacity;
-        drawGlyph(this.glyph, settings.colors.highlight, this.xPos, this.yPos * settings.fontSize);
+    }
+    if (settings.streamSpeedRandom) {
+      if (this.speedConstantChance && settings.streamSpeedRandomHalf) {
+        this.speed = randomIntMinMax(
+          settings.streamSpeedMin,
+          settings.streamSpeedMax,
+        );
       }
-      terminal.restore();
+    }
+    for (let i = 0; i < this.nullAmount + settings.streamSpeedBoost * 2; i++) {
+      if (streamTime % this.speed == 0) {
+        this.glyph = getGlyph();
+        this.opacity = randomDecMinMax(
+          settings.glyphOpacityMin,
+          settings.glyphOpacityMax,
+        );
+        if (this.yPos > terminalEl.height / settings.fontSize) {
+          this.yPos = randomIntMinMax(-codeRows, -this.height);
+        } else {
+          this.yPos = this.yPos + 1 + Math.floor(settings.streamSpeedBoost);
+        }
+      }
+      if (this.yPos + this.height > 0) {
+        terminal.save();
+        terminal.clearRect(
+          this.xPos,
+          this.yPos * settings.fontSize,
+          settings.fontSize,
+          this.height * settings.fontSize,
+        );
+        if (glowGlyph) {
+          terminal.globalAlpha = this.opacity;
+          drawGlyph(
+            this.glyph,
+            settings.colors.highlight,
+            this.xPos,
+            this.yPos * settings.fontSize,
+          );
+        }
+        terminal.restore();
+      }
     }
     if (streamTime > 1000) {
       streamTime = 0;
@@ -213,18 +264,19 @@ function makeItRain() {
   }
   var rain = function () {
     renderGlyphs();
-    terminal.clearRect(0, 0, terminalEl.width, terminalEl.height);
-    for (let i = 1; i < codeStreams.length; i++) {
-      const stream = codeStreams[i];
-      stream.draw();
-    }
-    for (let i = 1; i < nullStreams.length; i++) {
-      const nullStream = nullStreams[i];
-      nullStream.draw();
+    if (time % (settings.reduceFramerate + 1) == 0) {
+      terminal.clearRect(0, 0, terminalEl.width, terminalEl.height);
+      for (let i = 0; i < codeStreams.length; i++) {
+        const stream = codeStreams[i];
+        stream.draw();
+      }
+      for (let i = 1; i < nullStreams.length; i++) {
+        const nullStream = nullStreams[i];
+        nullStream.draw();
+      }
     }
     requestAnimationFrame(rain);
     time = time + 1;
-    firstDrawComplete = true;
   };
   requestAnimationFrame(rain);
 }
