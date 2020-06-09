@@ -25,6 +25,7 @@ const config = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
+        insert: 'head',
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
