@@ -58,7 +58,7 @@ This is pretty configurable. You can change the color, font, glyphs used. The de
 | **`glyphSpeedMin`** | `{Number}`  | `5` | Minimum transition speed of glyphs. |
 | **`glyphSpeedMax`** | `{Number}`  | `100` | Maximum transition speed of glyphs. |
 | **`glyphTransitionRandom`** | `{Boolean}`  | `true` | Ranomizes the time and speed at which glyphs change. |
-| **`highlightGlyphDensity`** | `{}`  | `2` | Controls the density of highlighted glyphs |
+| **`highlightGlyphDensity`** | `{Number}`  | `2` | Controls the density of highlighted glyphs |
 | **`glyphOpacityMin`** | `{Number}`  | `0.5` | Maximum opacity of glyphs. |
 | **`glyphOpacityMax`** | `{Number}`  | `1` | Maximum opacity of glyphs. |
 | **`colors.default`** | `{String}`  | `'rgba(63, 255, 106, 1)'` | Color of default glyphs. |
