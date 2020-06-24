@@ -1,60 +1,52 @@
 import './styles.css';
 
+const construct = window.localStorage;
+
 const settings = {
-  nullStreamDensity: 3,
+  nullStreamDensity: 4,
   nullStreamLengthMin: 1,
-  nullStreamLengthMax: 48,
-  streamSpeedMin: 3,
-  streamSpeedMax: 10,
+  nullStreamLengthMax: 42,
+  streamSpeedMin: 1,
+  streamSpeedMax: 20,
   streamSpeedRandom: true,
-  streamSpeedRandomHalf: true,
+  streamSpeedRandomHalf: false,
   streamSpeedBoost: 0,
   streamJumpersMin: 0,
   streamJumpersMax: 0,
   glyphSpeedMin: 5,
-  glyphSpeedMax: 100,
+  glyphSpeedMax: 50,
   glyphTransitionRandom: true,
-  highlightGlyphDensity: 2,
+  highlightGlyphDensity: 5,
   glyphOpacityMin: 0.5,
-  glyphOpacityMax: 1,
-  reduceFramerate: 0,
+  glyphOpacityMax: 0,
+  reduceFramerate: 2,
+  tileGlyphsX: 1,
+  tileGlyphsY: 1,
   colors: {
     default: 'rgba(63, 255, 106, 1)',
     highlight: 'rgba(200, 255, 215, 1)',
   },
   glyphs: 'qwertyuiopasdfghjklzxcvbnm.:"*<>|123457890-_=+QWERTYUIOP ',
-  fontSize: 18,
+  fontSize: 14,
   fontFace: 'matrix-code',
 };
 
 const matrix = settings.glyphs.split('');
 const codeFont = `${settings.fontSize}px ${settings.fontFace}`;
+const colorEntries = Object.entries(settings.colors);
 
 const terminalEl = document.querySelector('.terminal');
 terminalEl.height = window.innerHeight;
 terminalEl.width = window.innerWidth;
 
 const terminal = terminalEl.getContext('2d');
-terminal.imageSmoothingEnabled = false;
 
 let time = 0;
 let glyphTime = 0;
 let streamTime = 0;
-let codeStreams = [];
 let nullStreams = [];
 let codeRows = Math.floor(terminalEl.height / settings.fontSize);
 let codeColumns = Math.floor(terminalEl.width / settings.fontSize);
-let firstDrawComplete = false;
-
-const glyphBufferEl = document.querySelector('.glyph-buffer');
-glyphBufferEl.width = matrix.length * settings.fontSize;
-glyphBufferEl.heigh = settings.fontSize * settings.colors.length;
-
-const glyphBuffer = glyphBufferEl.getContext('2d');
-glyphBuffer.imageSmoothingEnabled = false;
-glyphBuffer.font = codeFont;
-glyphBuffer.textAlign = 'center';
-glyphBuffer.textBaseline = 'middle';
 
 function randomIntMinMax(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -65,41 +57,75 @@ function randomDecMinMax(min, max) {
 }
 
 function getGlyph() {
-  const glyph = randomIntMinMax(1, matrix.length);
+  let glyph = 0;
+  if (matrix.length > 1) {
+    glyph = randomIntMinMax(0, matrix.length - 1);
+  }
   return glyph;
 }
 
-function renderGlyphs() {
-  glyphBuffer.clearRect(0, 0, glyphBufferEl.width, glyphBufferEl.height);
-  for (let glyphIndex = 0; glyphIndex < matrix.length; glyphIndex++) {
-    const glyph = matrix[glyphIndex];
-    const colors = Object.entries(settings.colors);
-    for (let colorIndex = 0; colorIndex < colors.length; colorIndex++) {
-      const color = colors[colorIndex];
-      glyphBuffer.fillStyle = color[1];
-      glyphBuffer.fillText(
-        glyph,
-        settings.fontSize * (glyphIndex + 1),
-        settings.fontSize * (colorIndex + 1),
-      );
+class GlyphBuffer {
+  constructor() {
+    this.canvas;
+    this.ctx;
+  }
+  create(el, width, height, position) {
+    const canvas = document.createElement('canvas');
+    const body = document.getElementsByTagName('body')[0];
+    canvas.className = 'glyph-buffer';
+    canvas.width = matrix.length * settings.fontSize;
+    canvas.height = colorEntries.length * settings.fontSize;
+    canvas.style.top = '-1px';
+    canvas.style.position = 'fixed';
+    canvas.style.width = '0';
+    canvas.style.height = '0';
+    body.append(canvas);
+    this.canvas = document.querySelector('.glyph-buffer');
+
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.font = codeFont;
+    this.ctx.textAlign = 'right';
+    this.ctx.textBaseline = 'ideographic';
+  }
+  render() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    for (let glyphIndex = 0; glyphIndex < matrix.length; glyphIndex++) {
+      const glyph = matrix[glyphIndex];
+      const colors = Object.entries(settings.colors);
+      for (let colorIndex = 0; colorIndex < colors.length; colorIndex++) {
+        const color = colors[colorIndex];
+        this.ctx.fillStyle = color[1];
+        this.ctx.fillText(
+          glyph,
+          settings.fontSize * (glyphIndex + 1),
+          settings.fontSize * (colorIndex + 1),
+        );
+      }
     }
   }
+  get theCanvas() {
+    return this.canvas;
+  }
+  get theCtx() {
+    return this.ctx;
+  }
 }
+const glyphBuffer = new GlyphBuffer();
+glyphBuffer.create();
 
 function drawGlyph(glyph, color, xPos, yPos) {
-  const randomInt = glyph;
-  const glyphXPos = randomInt * settings.fontSize;
-  const colors = Object.entries(settings.colors);
+  const glyphXPos = glyph * settings.fontSize;
   let glyphYPos;
-  Object.entries(settings.colors).forEach(([key, value], colorIndex) => {
+  colorEntries.forEach(([key, value], colorIndex) => {
     if (color == value) {
       glyphYPos = settings.fontSize * colorIndex;
     }
   });
   terminal.drawImage(
-    glyphBufferEl,
-    glyphXPos + settings.fontSize / 2,
-    glyphYPos + settings.fontSize / 2,
+    glyphBuffer.theCanvas,
+    glyphXPos,
+    glyphYPos,
     settings.fontSize,
     settings.fontSize,
     xPos,
@@ -110,10 +136,10 @@ function drawGlyph(glyph, color, xPos, yPos) {
 }
 
 class Glyph {
-  constructor(xPos, index) {
+  constructor(xPos, yPos) {
     this.glyph = getGlyph();
     this.xPos = xPos;
-    this.index = index;
+    this.yPos = yPos;
     this.opacity = randomDecMinMax(
       settings.glyphOpacityMin,
       settings.glyphOpacityMax,
@@ -130,7 +156,6 @@ class Glyph {
         settings.glyphSpeedMax,
       );
     }
-    const yPos = this.index * settings.fontSize;
     if (glyphTime % this.speed == 0) {
       this.glyph = getGlyph();
       this.opacity = randomDecMinMax(
@@ -140,7 +165,7 @@ class Glyph {
     }
     terminal.save();
     terminal.globalAlpha = this.opacity;
-    drawGlyph(this.glyph, settings.colors.default, this.xPos, yPos);
+    drawGlyph(this.glyph, settings.colors.default, this.xPos, this.yPos);
     terminal.restore();
     if (glyphTime > 1000) {
       glyphTime = 0;
@@ -150,21 +175,49 @@ class Glyph {
   }
 }
 
-class CodeStream {
-  constructor(index) {
+class CodeMatrix {
+  constructor() {
     this.glyphs = [];
-    this.index = index;
-    this.xPos = this.index * settings.fontSize;
-    for (let i = 0; i < codeRows; i++) {
-      const glyph = new Glyph(this.xPos, i);
+    this.codeRows = codeRows;
+    this.codeColumns = codeColumns;
+    this.tileGlyphsX = settings.tileGlyphsX + 1;
+    this.tileGlyphsY = settings.tileGlyphsY + 1;
+    if (settings.tileGlyphsX > 0) {
+      this.codeRows = Math.ceil(codeRows / this.tileGlyphsX);
+    }
+    if (settings.tileGlyphsY > 0) {
+      this.codeColumns = Math.ceil(codeColumns / this.tileGlyphsY);
+    }
+    this.tileWidth = this.codeColumns * settings.fontSize;
+    this.tileHeight = this.codeRows * settings.fontSize;
+    for (let i = 0; i < this.codeColumns * this.codeRows; i++) {
+      const xPos = (i % this.codeColumns) * settings.fontSize;
+      const yPos = Math.floor(i / this.codeColumns) * settings.fontSize;
+      const glyph = new Glyph(xPos, yPos);
       this.glyphs.push(glyph);
     }
-    codeStreams.push(this);
   }
   draw() {
     for (let i = 0; i < this.glyphs.length; i++) {
       const glyph = this.glyphs[i];
       glyph.draw();
+    }
+    if (this.tileGlyphsX + this.tileGlyphsY > 0) {
+      for (let i = 1; i < this.tileGlyphsX * this.tileGlyphsY; i++) {
+        const xPos = (i % this.tileGlyphsX) * this.tileWidth;
+        const yPos = Math.floor(i / this.tileGlyphsY) * this.tileHeight;
+        terminal.drawImage(
+          terminalEl,
+          0,
+          0,
+          this.tileWidth,
+          this.tileHeight,
+          xPos,
+          yPos,
+          this.tileWidth,
+          this.tileHeight,
+        );
+      }
     }
   }
 }
@@ -172,7 +225,6 @@ class CodeStream {
 class NullStream {
   constructor(index) {
     this.glyph = getGlyph();
-    this.csLength;
     this.width;
     this.index = index;
     this.height = randomIntMinMax(
@@ -255,24 +307,75 @@ class NullStream {
   }
 }
 
+class FrameRate {
+  constructor() {
+    this.frameRate;
+    this.frameRateEl = document.querySelector('.framerate');
+    this.frameRateResultEl = document.querySelector('.framerate__result');
+  }
+  start() {
+    time = 0;
+    this.frameRate = setInterval(() => {
+      let frameRate;
+      const newFrameRate = Math.floor(time / 5);
+      if (newFrameRate !== frameRate) {
+        if (!this.frameRateEl.classList.contains('show')) {
+          this.frameRateEl.classList.add('show');
+        }
+        this.frameRateResultEl.textContent = newFrameRate;
+        frameRate = newFrameRate;
+      }
+      time = 0;
+    }, 5000);
+  }
+  stop() {
+    this.frameRateEl.classList.remove('show');
+    clearInterval(this.frameRate);
+  }
+}
+const frameRate = new FrameRate();
+
+class Hud {
+  constructor() {
+    this.hudEl = document.querySelector('.hud');
+    this.showHud = false;
+    if (construct.hasOwnProperty('showHud')) {
+      this.showHud = construct.showHud;
+    }
+    if (construct.showHud === 'true') {
+      this.showHud = construct.showHud;
+      this.hudEl.style.display = 'block';
+      frameRate.start();
+    }
+  }
+  toggle() {
+    this.showHud = !this.showHud;
+    construct.showHud = this.showHud;
+    if (this.showHud) {
+      this.hudEl.style.display = 'block';
+      frameRate.start();
+    } else {
+      this.hudEl.style.display = 'none';
+      frameRate.stop();
+    }
+  }
+}
+const hud = new Hud();
+
 function makeItRain() {
-  for (let i = 0; i <= codeColumns; i++) {
-    new CodeStream(i);
-    for (let index = 0; index < settings.nullStreamDensity; index++) {
-      new NullStream(i);
+  const codeMatrix = new CodeMatrix();
+  for (let column = 0; column <= codeColumns; column++) {
+    for (let stream = 0; stream < settings.nullStreamDensity; stream++) {
+      new NullStream(column);
     }
   }
   var rain = function () {
-    renderGlyphs();
+    glyphBuffer.render();
     if (time % (settings.reduceFramerate + 1) == 0) {
       terminal.clearRect(0, 0, terminalEl.width, terminalEl.height);
-      for (let i = 0; i < codeStreams.length; i++) {
-        const stream = codeStreams[i];
-        stream.draw();
-      }
+      codeMatrix.draw();
       for (let i = 1; i < nullStreams.length; i++) {
-        const nullStream = nullStreams[i];
-        nullStream.draw();
+        nullStreams[i].draw();
       }
     }
     requestAnimationFrame(rain);
@@ -282,3 +385,9 @@ function makeItRain() {
 }
 
 makeItRain();
+
+window.addEventListener('keydown', (e) => {
+  if (e.keyCode === 67) {
+    hud.toggle();
+  }
+});
