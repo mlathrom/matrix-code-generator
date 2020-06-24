@@ -75,5 +75,5 @@ I'll probably tinker with this some more, but I have no specific plans. Here's a
 - [ ] Change direction of stream.
 - [ ] Adapt to screen resize.
 - [ ] Brighter highlighted glyphs. (tough to do because of the stream clearing)
-- [ ] Add frame rate counter.
+- [x] Add frame rate counter.
 - [ ] Add controls for code settings.
