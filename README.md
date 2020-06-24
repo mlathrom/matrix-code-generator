@@ -53,6 +53,7 @@ This is pretty configurable. You can change the color, font, glyphs used. The de
 | **`fontFace`** | `{String}`  | `'matrix-code'` | Font face of glyphs. |
 
 ## Details
+
 ### Glyphs
 The glyphs were built in Adobe Illustrator using screenshots from the first film as reference. I took particular care to make sure the glyphs maintained consistent thickness, proportion, and style.
 
