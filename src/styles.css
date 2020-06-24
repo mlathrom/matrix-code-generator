@@ -31,13 +31,6 @@ body {
   top: 0;
   left: 0;
 }
-.glyph-buffer {
-  font-family: 'matrix-code';
-  width: 0;
-  height: 0;
-  top: -1px;
-  left: -1px;
-}
 .terminal {
   display: block;
   font-family: 'matrix-code';
@@ -68,4 +61,35 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+.hud {
+  display: none;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: bold;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 4px;
+  background-color: #ccc;
+  width: 180px;
+}
+.framerate {
+  padding: 4px 8px;
+  text-align: center;
+}
+.framerate__calculating {
+  display: block;
+}
+.framerate__result {
+  display: none;
+}
+.framerate.show .framerate__calculating {
+  display: none;
+}
+.framerate.show .framerate__result {
+  display: block;
+}
+.framerate__result::after {
+  content: ' fps';
 }
