@@ -34,14 +34,14 @@ This is pretty configurable. You can change the color, font, glyphs used. The de
 | **`nullStreamLengthMax`** | `{Number}`  | `42` | Minimum block length of null streams. |
 | **`streamSpeedMin`** | `{Number}`  | `1` | Minimum speed of streams. |
 | **`streamSpeedMax`** | `{Number}`  | `20` | Maximum speed of streams. |
-| **`streamSpeedRandom`** | `{Boolean}`  | `true` | Ranomizes the speed at which streams move. Streams can change speed during life. |
+| **`streamSpeedRandom`** | `{Boolean}`  | `true` | Randomizes the speed at which streams move. Streams can change speed during life. |
 | **`streamSpeedRandomHalf`** | `{Boolean}`  | `false` | Give half of the streams random changing speed, and the other half consistent. |
 | **`streamSpeedBoost`** | `{Number}`  | `0` | Increases the "blocks per frame" speed of streams. |
 | **`streamJumperMin`** | `{Number}`  | `0` | Minimum number of highlighted glyphs that make quick jumps. |
 | **`streamJumperMax`** | `{Number}`  | `0` | Miximum number of highlighted glyphs that make quick jumps. |
 | **`glyphSpeedMin`** | `{Number}`  | `5` | Minimum transition speed of glyphs. |
 | **`glyphSpeedMax`** | `{Number}`  | `50` | Maximum transition speed of glyphs. |
-| **`glyphTransitionRandom`** | `{Boolean}`  | `true` | Ranomizes the time and speed at which glyphs change. |
+| **`glyphTransitionRandom`** | `{Boolean}`  | `true` | Randomizes the time and speed at which glyphs change. |
 | **`highlightGlyphDensity`** | `{Number}`  | `2` | Controls the density of highlighted glyphs |
 | **`glyphOpacityMin`** | `{Number}`  | `0.5` | Maximum opacity of glyphs. |
 | **`glyphOpacityMax`** | `{Number}`  | `1` | Maximum opacity of glyphs. |
